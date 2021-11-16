@@ -39,9 +39,9 @@ from sklearn.ensemble import GradientBoostingClassifier
 #         RandomForest : 0.71
 #         GradientBoost : 0.69
 #     - v2 : 변수선택 및 타입조절
-#         DecisionTree : 0.69
-#         RandomForest : 0.71
-#         GradientBoost : 0.69
+#         DecisionTree : 
+#         RandomForest : 
+#         GradientBoost : 
 
 # ## data load and wrangling
 
@@ -192,10 +192,22 @@ print('categorical : ', nm_str,
 
 train_x.shape, test_x.shape
 
+
+
+# ### 1-2. ploting
+
+# correaltion
+train_x[nm_num].corr()
+
+# 'family_size'와 'child_num'간 correlation이 높다. (당연한 거지만) 공선성이 발생할 우려가 있으므로 하나씩 모델에 넣어봄.
+
+df = pd.concat([train_x[nm_num], train_y], axis = 1)
+df[df['credit']]
+
 # ### 2. scaler
 
-train_x_cl = train_x.copy()
-test_x_cl = test_x.copy()
+train_x_cl = train_x.copy().reset_index()
+test_x_cl = test_x.copy().reset_index()
 
 test_x[nm_num].columns
 
@@ -215,7 +227,7 @@ type(train_x_cl)
 train_x_cl.shape
 
 # +
-train_x_cl.isnull().sum()
+#train_x_cl.isnull().sum()
 
 train_x_cl[train_x_cl['child_num'].isnull() == True]
 # -
@@ -227,8 +239,9 @@ train_x_cl_t, train_x_cl_v, train_y_t, train_y_v = train_test_split(train_x_cl, 
 # ## modeling
 # ### 1. DecisionTree
 
-md_d1 = DecisionTreeClassifier(max_depth=2, 
-                               random_state=2021)
+train_x_cl_t[train_x_cl_t['child_num'].isnull()]
+
+md_d1 = DecisionTreeClassifier(max_depth = 5, random_state=2021)
 md_d1.fit(train_x_cl_t, train_y_t)
 
 pred_d1 = md_d1.predict(train_x_cl_v)
@@ -251,7 +264,7 @@ pred_d1
 
 # ### 2. RandomForest
 
-md_r1 = RandomForestClassifier(n_estimators=300, 
+md_r1 = RandomForestClassifier(n_estimators=100, 
                                random_state=2021)
 md_r1.fit(train_x_cl_t, train_y_t)
 
